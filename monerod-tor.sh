@@ -29,12 +29,19 @@ if [[ -z "$MONEROD" ]]; then
     exit 1
 fi
 
+# Function to create directories if they don't exist
+create_directories() {
+    mkdir -p "$DIR/monerod-conf"
+    mkdir -p "$TORDIR"
+    chmod 700 "$TORDIR"
+}
+
 # Function to create configuration files (only if they don't exist)
 create_config() {
+    create_directories
+
     if [[ ! -f "$TORRC" || ! -f "$MONEROD_CONF" ]]; then
         echo "Creating Tor configuration..."
-        mkdir -p "$TORDIR"
-        chmod 700 "$TORDIR"
         rm -f "$TORRC"
 
         # Create torrc file
@@ -87,6 +94,7 @@ EOF
 
 # Function to run the services (Tor and monerod)
 run_services() {
+
     echo "Starting Tor..."
     nohup tor -f "$TORRC" 2> "$TORDIR/tor.stderr" 1> "$TORDIR/tor.stdout" &
 
